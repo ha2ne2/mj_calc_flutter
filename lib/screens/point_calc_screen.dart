@@ -61,7 +61,7 @@ class _PointCalcState extends State<PointCalcScreen> {
           ])
         ]);
 
-    const huList = RadioGroups(candidates: [
+    const huList = RadioGroups(title: "符", candidates: [
       "20",
       "25",
       "30",
@@ -72,7 +72,7 @@ class _PointCalcState extends State<PointCalcScreen> {
       "80-",
     ]);
 
-    const hanList = RadioGroups(candidates: [
+    const hanList = RadioGroups(title: "翻", candidates: [
       "1",
       "2",
       "3",
@@ -83,9 +83,10 @@ class _PointCalcState extends State<PointCalcScreen> {
       "13-",
     ]);
 
-    const pointList = RadioGroups(candidates: [
+    const pointList = RadioGroups(title: "点", candidates: [
       "1300",
       "2300",
+      "2600",
       "3900",
       "5200",
       "6400",
@@ -99,23 +100,46 @@ class _PointCalcState extends State<PointCalcScreen> {
       ),
       body: Container(
           padding: const EdgeInsets.all(8.0),
-          child: Column(children: [
-            const Text("東4局南家"),
-            const Text("場役：立直"),
-            Row(children: [
-              const Text("ドラ表示牌:"),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text(
+              "東4局南家",
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
+            ),
+            const Text(
+              "場役：立直",
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
+            ),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text(
+                "ドラ表示牌:",
+                style: TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
               Image.asset("images/pai/z2.png"),
-              const Text("裏ドラ表示牌:"),
+              const Text(
+                "裏ドラ表示牌:",
+                style: TextStyle(
+                  fontSize: 20.0,
+                ),
+              ),
               Image.asset("images/pai/z3.png")
             ]),
             paiList,
-            const Row(
-              children: [
-                Expanded(child: huList),
-                Expanded(child: hanList),
-                Expanded(child: pointList)
-              ],
-            )
+            const Padding(
+                padding: EdgeInsets.only(top: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(child: huList),
+                    Expanded(child: hanList),
+                    Expanded(child: pointList)
+                  ],
+                ))
           ])),
     );
   }
