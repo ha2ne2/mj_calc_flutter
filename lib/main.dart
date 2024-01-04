@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: Color(0xFF55C500),
           ),
           textTheme: Theme.of(context).textTheme.apply(
-                bodyColor: Colors.white,
+                bodyColor: Colors.black,
               )),
       home: const TopScreen(),
     );
