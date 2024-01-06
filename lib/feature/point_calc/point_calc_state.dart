@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 enum GameState { ready, playing, ended }
 
 @immutable
-class PointCalcScreenState {
-  const PointCalcScreenState(
+class PointCalcState {
+  const PointCalcState(
       {this.solvedCount = 0,
       this.problemsCount = 0,
       this.gameState = GameState.ready});
@@ -15,9 +15,9 @@ class PointCalcScreenState {
   final int problemsCount;
   final GameState gameState;
 
-  PointCalcScreenState copyWith(
+  PointCalcState copyWith(
       {int? solvedCount, int? problemsCount, GameState? gameState}) {
-    return PointCalcScreenState(
+    return PointCalcState(
         solvedCount: solvedCount ?? this.solvedCount,
         problemsCount: problemsCount ?? this.problemsCount,
         gameState: gameState ?? this.gameState);
@@ -29,8 +29,8 @@ class PointCalcScreenState {
   }
 }
 
-class PointCalcScreenStateNotifier extends StateNotifier<PointCalcScreenState> {
-  PointCalcScreenStateNotifier() : super(const PointCalcScreenState());
+class PointCalcStateNotifier extends StateNotifier<PointCalcState> {
+  PointCalcStateNotifier() : super(const PointCalcState());
 
   void gameStart() {
     state = state.copyWith(
@@ -44,7 +44,12 @@ class PointCalcScreenStateNotifier extends StateNotifier<PointCalcScreenState> {
 
   void answer() {
     debugPrint(state.toString());
-    state = state.copyWith(solvedCount: state.solvedCount + 1);
+    if (state.solvedCount + 1 == state.problemsCount) {
+      state = state.copyWith(
+          gameState: GameState.ended, solvedCount: state.solvedCount + 1);
+    } else {
+      state = state.copyWith(solvedCount: state.solvedCount + 1);
+    }
   }
 
   /*
@@ -60,8 +65,7 @@ class PointCalcScreenStateNotifier extends StateNotifier<PointCalcScreenState> {
   */
 }
 
-final pointCalcScreenProvider =
-    StateNotifierProvider<PointCalcScreenStateNotifier, PointCalcScreenState>(
-        (ref) {
-  return PointCalcScreenStateNotifier();
+final pointCalcStateProvider =
+    StateNotifierProvider<PointCalcStateNotifier, PointCalcState>((ref) {
+  return PointCalcStateNotifier();
 });

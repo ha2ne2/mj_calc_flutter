@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mj_calc_flutter/screens/point_calc_screen.dart';
-import 'package:mj_calc_flutter/screens/point_calc_screen_dummy.dart';
+import 'package:mj_calc_flutter/feature/point_calc/point_calc_page.dart';
+import 'package:mj_calc_flutter/feature/point_calc/point_calc_screen_dummy.dart';
 
 class TopScreen extends StatefulWidget {
   const TopScreen({super.key});
@@ -16,14 +16,13 @@ class _TopScreentate extends State<TopScreen> {
         appBar: AppBar(
           title: const Text('麻雀 点数計算 練習アプリ'),
         ),
-        // NOTE: これの意味がわからない
         body: Column(
           children: [
             ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: ((context) => const PointCalcScreen()),
+                      builder: ((context) => const PointCalcPage()),
                     ),
                   );
                 },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mj_calc_flutter/screens/top_screen.dart';
+import 'package:mj_calc_flutter/top_screen.dart';
 //import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() {
