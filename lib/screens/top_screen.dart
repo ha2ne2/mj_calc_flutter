@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mj_calc_flutter/screens/point_calc_screen.dart';
+import 'package:mj_calc_flutter/screens/point_calc_screen_dummy.dart';
 
 class TopScreen extends StatefulWidget {
   const TopScreen({super.key});
@@ -27,7 +28,15 @@ class _TopScreentate extends State<TopScreen> {
                   );
                 },
                 child: const Text("点数計算")),
-            ElevatedButton(onPressed: () {}, child: const Text("符計算")),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: ((context) => const PointCalcScreenDummy()),
+                    ),
+                  );
+                },
+                child: const Text("符計算")),
             ElevatedButton(onPressed: () {}, child: const Text("翻計算")),
             ElevatedButton(onPressed: () {}, child: const Text("点数表暗記")),
           ],
