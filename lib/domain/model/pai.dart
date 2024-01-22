@@ -20,9 +20,25 @@ class Pai {
 
   @override
   int get hashCode => kind.hashCode ^ num.hashCode;
+
+  @override
+  String toString() {
+    return '($kind $num)';
+  }
 }
 
-enum PaiKind { manzu, sozu, pinzu, jihai }
+enum PaiKind {
+  manzu('m'),
+  sozu('s'),
+  pinzu('p'),
+  jihai('z');
+
+  final String s;
+  const PaiKind(this.s);
+
+  @override
+  String toString() => s;
+}
 
 typedef PaiGroup = List<Pai>;
 const jihaiString = "東南西北白発中";

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:mj_calc_flutter/domain/model/pai.dart';
 import 'package:mj_calc_flutter/domain/utils/pai_utils.dart';
 import 'package:mj_calc_flutter/domain/utils/string_utils.dart';
@@ -47,12 +48,11 @@ class PaiGroupUtils {
     final kind = paiGroup[0].kind;
     final num = paiGroup[0].num;
 
-    return paiGroup ==
-        [
-          Pai(kind: kind, num: num),
-          Pai(kind: kind, num: num + 1),
-          Pai(kind: kind, num: num + 2)
-        ];
+    return listEquals(paiGroup, [
+      Pai(kind: kind, num: num),
+      Pai(kind: kind, num: num + 1),
+      Pai(kind: kind, num: num + 2)
+    ]);
   }
 
   /// f("123s4567m白発") => PaiGroup

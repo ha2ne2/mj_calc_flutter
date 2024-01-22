@@ -1,7 +1,6 @@
 import 'package:mj_calc_flutter/domain/model/hand.dart';
 import 'package:mj_calc_flutter/domain/model/situation.dart';
 import 'package:mj_calc_flutter/domain/model/yaku.dart';
-import 'package:mj_calc_flutter/domain/utils/list_utils.dart';
 import 'package:mj_calc_flutter/domain/utils/pai_group_utils.dart';
 import 'package:mj_calc_flutter/domain/model/pai.dart';
 import 'package:mj_calc_flutter/domain/utils/pai_utils.dart';
@@ -16,8 +15,10 @@ class MahjongPointCalc {
     List<String> splitTehai = tehai.split(RegExp(r'[ |_]'));
     // 門前部分を表す文字列
     String menzenStr = splitTehai[0];
-    // 鳴き部分を表す文字列。最後の文字列は上がり牌を表すため除外。
-    List<String> nakiStrList = ListUtils.removeFirstAndLast(splitTehai);
+    // 鳴き部分を表す文字列
+    List<String> nakiStrList = splitTehai.sublist(1);
+    // 上がり牌を表す文字列
+    String? agariHaiStr = nakiStrList.lastOrNull;
 
     // 1
     // TODO: 何に使っているか不明
@@ -45,13 +46,14 @@ class MahjongPointCalc {
     // TODO: もっときれいに書けるはず
     Pai? tumo;
     Pai? ron;
-    final agariHaiStr = nakiStrList.last;
-    final agariHaiList = PaiGroupUtils.parse(agariHaiStr);
-    if (agariHaiList.length == 1) {
-      if (agariHaiStr.endsWith('\'')) {
-        tumo = agariHaiList[0];
-      } else {
-        ron = agariHaiList[0];
+    if (agariHaiStr != null) {
+      final agariHaiList = PaiGroupUtils.parse(agariHaiStr);
+      if (agariHaiList.length == 1) {
+        if (agariHaiStr.endsWith('\'')) {
+          tumo = agariHaiList[0];
+        } else {
+          ron = agariHaiList[0];
+        }
       }
     }
 

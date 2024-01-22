@@ -27,4 +27,45 @@ class Hand {
       required this.string,
       required this.ron,
       required this.tumo});
+
+  @override
+  String toString() {
+    return 'Hand(situation: $situation, menzen: $menzen, naki: $naki, tii: $tii, pon: $pon, kan: $kan, ankan: $ankan, akadora: $akadora, string: $string, ron: $ron, tumo: $tumo)';
+  }
+
+  /// オーバーライドサンプル
+  /*
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Hand &&
+        other.situation == situation &&
+        listEquals(other.menzen, menzen) &&
+        listEquals(other.naki, naki) &&
+        listEquals(other.tii, tii) &&
+        listEquals(other.pon, pon) &&
+        listEquals(other.kan, kan) &&
+        listEquals(other.ankan, ankan) &&
+        listEquals(other.akadora, akadora) &&
+        other.string == string &&
+        other.ron == ron &&
+        other.tumo == tumo;
+  }
+
+  @override
+  int get hashCode {
+    return situation.hashCode ^
+        menzen.hashCode ^
+        naki.hashCode ^
+        tii.hashCode ^
+        pon.hashCode ^
+        kan.hashCode ^
+        ankan.hashCode ^
+        akadora.hashCode ^
+        string.hashCode ^
+        ron.hashCode ^
+        tumo.hashCode;
+  }
+  */
 }
