@@ -1,0 +1,1 @@
+typedef Yaku = (int, String);

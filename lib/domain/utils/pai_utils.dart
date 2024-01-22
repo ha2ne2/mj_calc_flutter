@@ -20,12 +20,12 @@ class PaiUtils {
       throw ArgumentError('Invalid num: $numStr, e: $e');
     }
 
-    final PaiKind kind = _convertStringToPaiKind(kindStr);
+    final PaiKind kind = convertStringToPaiKind(kindStr);
     return Pai(kind: kind, num: num, aka: aka);
   }
 
   /// convertStringToPaiKind('m') => PaiKind.manzu
-  static PaiKind _convertStringToPaiKind(String kindStr) {
+  static PaiKind convertStringToPaiKind(String kindStr) {
     switch (kindStr) {
       case 'm':
         return PaiKind.manzu;

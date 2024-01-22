@@ -1,48 +1,13 @@
-import 'dart:collection';
-
 import 'package:mj_calc_flutter/domain/model/hand.dart';
+import 'package:mj_calc_flutter/domain/model/situation.dart';
+import 'package:mj_calc_flutter/domain/model/yaku.dart';
 import 'package:mj_calc_flutter/domain/utils/list_utils.dart';
 import 'package:mj_calc_flutter/domain/utils/pai_group_utils.dart';
 import 'package:mj_calc_flutter/domain/model/pai.dart';
+import 'package:mj_calc_flutter/domain/utils/pai_utils.dart';
 
 class MahjongPointCalc {
-  /*
-  static List<Pai> fromString(String s) {
-    return [];
-  }
-  */
-
-  // 文字列を画面に表示するまでのフロー
-  // 1. (to-list "678m11345789p45s 3s:南4局北家ドラ1m")
-
-  /*
-  ;; string -> [pai]
-(defn to-list [s]
-  (let [[tehai info] (split s #":")]
-    (let [[a & b] (split tehai #" |_")]
-      (let [akadora (map (comp symbol second) (re-seq #"0.*?([mps])" s))
-            info (read-info info)
-            menzen (to-list* a)
-            naki (empty-to-nil (map to-list* (butlast b)))
-            hu-ro (map naki-to-list (butlast b)) ;; 改良の余地がある また今度
-            ho-ra (tumo-or-ron (last b))
-            hand (array-map :menzen menzen :naki naki :aka akadora :string s)
-            
-            ;; ((:ti- ((m 1) (m 2) (m 3))) (:ti- ((s 7) (s 8) (s 9)))) を (:ti- (((s 7) (s 8) (s 9)) ((m 1) (m 2) (m 3))))としてまとめる
-            hand2 (if hu-ro (reduce (fn [m naki] (ana-assoc m (first naki) (conj it (second naki))))
-                                    hand
-                                    hu-ro)
-                      hand)
-            hand3 (if ho-ra (concat-array-map
-                             hand2
-                             (array-map (first ho-ra) (second ho-ra)))
-                      hand2)]
-        ;; into を使うとhash-mapに変換されてしまう
-        (concat-array-map info hand3)
-        ))))
-        */
-
-  /// f("123s4567m白発") => List<Pai>
+  /// f("123s4567m白発") => PaiGroup
   // e.g. fromString("678m11345789p45s 3s:南4局北家ドラ1m")
   static Hand parseString(String s) {
     List<String> splitTehaiInfo = s.split(':');
@@ -51,92 +16,98 @@ class MahjongPointCalc {
     List<String> splitTehai = tehai.split(RegExp(r'[ |_]'));
     // 門前部分を表す文字列
     String menzenStr = splitTehai[0];
-    // 鳴き部分を表す文字列。最後の部分は上がり牌を表すため除外。
+    // 鳴き部分を表す文字列。最後の文字列は上がり牌を表すため除外。
     List<String> nakiStrList = ListUtils.removeFirstAndLast(splitTehai);
 
     // 1
     // TODO: 何に使っているか不明
     // 赤ドラの抽出 akadoraの中身は["m", "p"]等になる
-    List<String> akadora = RegExp(r'0.*?([mps])')
+    List<PaiKind> akadora = RegExp(r'0.*?([mps])')
         .allMatches(s)
-        .map((m) => m.group(1)!) // allMatchesを使っているのでキャストは安全
+        .map((m) => PaiUtils.convertStringToPaiKind(m.group(1)!))
         .toList();
 
     // 2 場情報のパース
-    // TODO: need to implement
-    // List<String> infoList = readInfo(info);
+    final situation = parseSituation(info);
 
     // 3 門前部分のパース
-    List<Pai> menzen = PaiGroupUtils.parsePaiString(menzenStr);
+    PaiGroup menzen = PaiGroupUtils.parse(menzenStr);
 
     // 4 鳴き部分のパース
-    final LinkedHashMap<String, List<List<Pai>>> nakiMap =
-        PaiGroupUtils.parseNakiString(nakiStrList);
-    final List<List<Pai>> naki = [];
-    naki.addAll(nakiMap["tii"]!);
-    naki.addAll(nakiMap["pon"]!);
-    naki.addAll(nakiMap["ankan"]!);
-    naki.addAll(nakiMap["minkan"]!);
+    final nakiRecord = PaiGroupUtils.parseNaki(nakiStrList);
+    final List<PaiGroup> naki = [];
+    naki.addAll(nakiRecord.tii);
+    naki.addAll(nakiRecord.pon);
+    naki.addAll(nakiRecord.ankan);
+    naki.addAll(nakiRecord.minkan);
 
     // 5 ツモかロンかの判定処理
-    // TODO: need to implement
-    // List<String> hora = tumoOrRon(b.last);
-
-    /*
-    // 6
-    Map<String, dynamic> hand = {
-      'menzen': menzen,
-      'naki': naki,
-      'aka': akadora.map((s) => Symbol(s)).toList(),
-      'string': s,
-    };
-
-    // 7
-    Map<String, dynamic> hand2 = huro.isNotEmpty
-        ? huro.fold(
-            hand,
-            (m, naki) => anaAssoc(
-                m,
-                naki[0],
-                (m, n) => m
-                  ..[n] = (m[n] as List<dynamic>?)?.toList()
-                  ..add(naki[1])))
-        : hand;
-
-    // 8
-    Map<String, dynamic> hand3 = hora.isNotEmpty
-        ? concatArrayMap(hand2, {
-            hora[0]: hora[1],
-          })
-        : hand2;
-
-    // 9
-    Map<String, dynamic> result =
-        Map.fromEntries(concatArrayMap(infoList, hand3).entries);
-
-    return result;
-    */
+    // TODO: もっときれいに書けるはず
+    Pai? tumo;
+    Pai? ron;
+    final agariHaiStr = nakiStrList.last;
+    final agariHaiList = PaiGroupUtils.parse(agariHaiStr);
+    if (agariHaiList.length == 1) {
+      if (agariHaiStr.endsWith('\'')) {
+        tumo = agariHaiList[0];
+      } else {
+        ron = agariHaiList[0];
+      }
+    }
 
     final hand = Hand(
-        ba: '',
-        kyoku: 1,
-        honba: 1,
-        ie: '',
-        dora: [],
-        uraDora: [],
-        oya: true,
-        situationalYaku: [],
+        situation: situation,
         menzen: menzen,
         naki: naki,
-        tii: nakiMap["tii"]!,
-        pon: nakiMap["pon"]!,
-        kan: nakiMap["minkan"]!,
-        ankan: nakiMap["ankan"]!,
-        aka: [],
-        string: '',
-        ron: null,
-        tumo: null);
+        tii: nakiRecord.tii,
+        pon: nakiRecord.pon,
+        kan: nakiRecord.minkan,
+        ankan: nakiRecord.ankan,
+        akadora: akadora,
+        string: s,
+        ron: ron,
+        tumo: tumo);
 
     return hand;
+  }
+
+  static Situation parseSituation(String info) {
+    final bool oya = RegExp(r"親").hasMatch(info);
+    final ba = RegExp(r"(東|南|西|北)(\d)局").firstMatch(info);
+    final honba = RegExp(r"(\d+)本場").firstMatch(info);
+    final ie = RegExp(r"(.)家").firstMatch(info);
+    final dora = RegExp(r"ドラ(.+?)($|裏)").firstMatch(info);
+    final uraDora = RegExp(r"裏ドラ(.+)$").firstMatch(info);
+
+    var aux = <Yaku>[];
+    if (RegExp(r"立直").hasMatch(info)) {
+      aux.add(RegExp(r"両立直").hasMatch(info) ? (2, '両立直') : (1, '立直'));
+    }
+    if (RegExp(r"一発").hasMatch(info)) {
+      aux.add((1, '一発'));
+    }
+    if (RegExp(r"嶺上").hasMatch(info)) {
+      aux.add((1, '嶺上開花'));
+    }
+    if (RegExp(r"槍槓").hasMatch(info)) {
+      aux.add((1, '槍槓'));
+    }
+    if (RegExp(r"海底").hasMatch(info)) {
+      aux.add((1, '海底撈月'));
+    }
+    if (RegExp(r"河底").hasMatch(info)) {
+      aux.add((1, '河底撈魚'));
+    }
+
+    return Situation(
+      ba: ba != null ? ba.group(1)! : '東',
+      kyoku: ba != null ? int.parse(ba.group(2)!) : 1,
+      honba: honba != null ? int.parse(honba.group(1)!) : 0,
+      ie: ie != null ? ie.group(1)! : '南',
+      dora: dora != null ? PaiGroupUtils.parse(dora.group(1)!) : [],
+      uraDora: uraDora != null ? PaiGroupUtils.parse(uraDora.group(1)!) : [],
+      oya: ie != null && ie.group(1) == "東" || oya,
+      situationalYaku: aux,
+    );
   }
 }

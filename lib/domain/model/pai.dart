@@ -1,9 +1,5 @@
 /// 牌モデル
 
-enum PaiKind { manzu, sozu, pinzu, jihai }
-
-const jihaiString = "東南西北白発中";
-
 /// 萬子: 1m - 9m
 /// 索子: 1s - 9s
 /// 筒子: 1p - 9p
@@ -12,11 +8,21 @@ class Pai {
   final PaiKind kind;
   final int num;
   final bool aka;
-  const Pai({required this.kind, required this.num, required this.aka});
+  const Pai({required this.kind, required this.num, this.aka = false});
 
-  /// 同じ牌かどうかを判断する関数
-  // ==メソッドをオーバーライドをしない理由はbool akaがあるため
-  bool isEquivalentTo(Pai other) {
-    return kind == other.kind && num == other.num;
-  }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Pai &&
+          runtimeType == other.runtimeType &&
+          kind == other.kind &&
+          num == other.num;
+
+  @override
+  int get hashCode => kind.hashCode ^ num.hashCode;
 }
+
+enum PaiKind { manzu, sozu, pinzu, jihai }
+
+typedef PaiGroup = List<Pai>;
+const jihaiString = "東南西北白発中";
